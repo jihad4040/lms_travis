@@ -5,3 +5,4 @@ config.bat
 temp_interactive_push.bat
 .env
 .DS_Store
+branch_structure.json
