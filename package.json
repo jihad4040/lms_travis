@@ -21,6 +21,7 @@
   "dependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/ejs": "^3.1.5",
+    "node-fetch": "^3.3.2",
     "@types/multer": "^2.0.0",
     "@types/nodemailer": "^7.0.4",
     "bcrypt": "^6.0.0",
