@@ -1,35 +1,266 @@
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import { cloudinaryUpload } from './cloudinary.config';
-import multer from 'multer';
-import { Request } from 'express';
+// import { CloudinaryStorage } from "multer-storage-cloudinary";
+// import { cloudinaryUpload } from "./cloudinary.config";
+// import multer from "multer";
+// import { Request } from "express";
+
+// const storage = new CloudinaryStorage({
+//   cloudinary: cloudinaryUpload,
+//   params: async (req: Request, file: Express.Multer.File) => {
+//     console.log("Processing file:", file.originalname); // ✅ Debug log for incoming file --- IGNORE ---
+//     const fileExtension = file.originalname.split(".").pop() || "";
+
+//     const baseFileName = file.originalname
+//       .replace(`.${fileExtension}`, "")
+//       .toLowerCase()
+//       .replace(/\s+/g, "-")
+//       .replace(/[^a-z0-9\-]/g, "");
+
+//     const uniqueId = `${Math.random().toString(36).substring(2)}-${Date.now()}-${baseFileName}`;
+//     console.log(
+//       `Generated unique ID: ${uniqueId} for file: ${file.originalname}`,
+//     ); // ✅ Debug log for generated unique ID --- IGNORE ---
+//     // let resourceType: 'image' | 'video' | 'raw' = 'image';
+
+//     // if (file.mimetype === 'application/zip' || file.mimetype === 'application/pdf') {
+//     //   resourceType = 'raw';
+//     // }
+//     // else if (file.mimetype.startsWith('video/')) {
+//     //   resourceType = 'video';
+//     // }
+//     // else if (file.mimetype.startsWith('audio/')) {
+//     //   resourceType = 'video';   // ✅ FIXED: audio must be uploaded as video
+//     // }
+
+//     let resourceType: "image" | "video" | "raw" = "raw";
+
+//     if (file.mimetype.startsWith("video/")) {
+//       resourceType = "video";
+//     } else if (file.mimetype.startsWith("audio/")) {
+//       resourceType = "video";
+//     } else if (
+//       file.mimetype.includes("zip") ||
+//       file.mimetype === "application/pdf"
+//     ) {
+//       resourceType = "raw";
+//     }
+//     console.log(
+//       `Determined resource type: ${resourceType} for file: ${file.originalname}`,
+//     );
+//     return {
+//       folder: "assets",
+//       public_id: uniqueId,
+//       resource_type: resourceType,
+//       format: fileExtension,
+//     };
+//   },
+// });
+
+// const storage = new CloudinaryStorage({
+//   cloudinary: cloudinaryUpload,
+//   params: async (req: Request, file: Express.Multer.File) => {
+//     console.log("Processing file:", file.originalname); // ✅ Debug log for incoming file --- IGNORE ---
+//     const fileExtension =
+//       file.originalname.split(".").pop()?.toLowerCase() || "";
+
+//     const baseFileName = file.originalname
+//       .replace(`.${fileExtension}`, "")
+//       .toLowerCase()
+//       .replace(/\s+/g, "-")
+//       .replace(/[^a-z0-9\-]/g, "");
+
+//     const uniqueId = `${Math.random().toString(36).substring(2)}-${Date.now()}-${baseFileName}`;
+//     console.log(
+//       `Generated unique ID: ${uniqueId} for file: ${file.originalname}`,
+//     ); // ✅ Debug log for generated unique ID --- IGNORE ---
+//     let resourceType: "image" | "video" | "raw" = "raw";
+
+//     if (file.mimetype.startsWith("image/")) {
+//       resourceType = "image";
+//     } else if (
+//       file.mimetype.startsWith("video/") ||
+//       file.mimetype.startsWith("audio/")
+//     ) {
+//       resourceType = "video";
+//     } else {
+//       resourceType = "raw";
+//     }
+
+//     // Main logic fix ekhane
+//     const params: any = {
+//       folder: "assets",
+//       public_id: uniqueId,
+//       resource_type: resourceType,
+//     };
+//     console.log(
+//       `Determined resource type: ${resourceType} for file: ${file.originalname}`,
+//     );
+//     // ⚠️ RAW file hole format pathano jabe na
+//     if (resourceType !== "raw") {
+//       params.format = fileExtension;
+//     }
+//     console.log(`Final params for file ${file.originalname}:`, params);
+//     return params;
+//   },
+// });
+
+// export const multerUpload = multer({
+//   storage: storage,
+//   limits: {
+//     fileSize: 1024 * 1024 * 1024, // 1GB
+//   },
+// });
+
+// const storage = new CloudinaryStorage({
+//   cloudinary: cloudinaryUpload,
+//   params: async (req: Request, file: Express.Multer.File) => {
+//     const fileExtension =
+//       file.originalname.split(".").pop()?.toLowerCase() || "";
+//     const uniqueId = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+
+//     let resourceType: "image" | "video" | "raw" = "raw";
+//     if (file.mimetype.startsWith("image/")) resourceType = "image";
+//     else if (
+//       file.mimetype.startsWith("video/") ||
+//       file.mimetype.startsWith("audio/")
+//     )
+//       resourceType = "video";
+
+//     const params: any = {
+//       folder: "assets",
+//       public_id: uniqueId,
+//       resource_type: resourceType,
+//     };
+
+//     // Raw file hole format property thaka jabe na
+//     if (resourceType !== "raw") {
+//       params.format = fileExtension;
+//     }
+
+//     return params;
+//   },
+// });
+
+// export const multerUpload = multer({
+//   storage: storage,
+//   limits: {
+//     fileSize: 50 * 1024 * 1024, // Limit 50MB (Adjust based on your Cloudinary plan)
+//   },
+// });
+
+// import { CloudinaryStorage } from "multer-storage-cloudinary";
+// import { cloudinaryUpload } from "./cloudinary.config";
+// import multer from "multer";
+// import { Request } from "express";
+
+// const storage = new CloudinaryStorage({
+//   cloudinary: cloudinaryUpload,
+//   params: async (req: Request, file: Express.Multer.File) => {
+//     const fileExtension = file.originalname.split(".").pop() || "";
+
+//     const baseFileName = file.originalname
+//       .replace(`.${fileExtension}`, "")
+//       .toLowerCase()
+//       .replace(/\s+/g, "-")
+//       .replace(/[^a-z0-9\-]/g, "");
+
+//     const uniqueId = `${Math.random().toString(36).substring(2)}-${Date.now()}-${baseFileName}`;
+
+//     let resourceType: "image" | "video" | "raw" = "image";
+
+//     if (
+//       file.mimetype === "application/zip" ||
+//       file.mimetype === "application/pdf"
+//     ) {
+//       resourceType = "raw";
+//     } else if (file.mimetype.startsWith("video/")) {
+//       resourceType = "video";
+//     } else if (file.mimetype.startsWith("audio/")) {
+//       resourceType = "video"; // ✅ FIXED: audio must be uploaded as video
+//     }
+
+//     return {
+//       folder: "assets",
+//       public_id: uniqueId,
+//       resource_type: resourceType,
+//       format: fileExtension,
+//     };
+//   },
+// });
+
+// export const multerUpload = multer({
+//   storage: storage,
+//   limits: {
+//     fileSize: 1024 * 1024 * 1024, // 1GB
+//   },
+// });
+
+// multer.config.ts - FIXED VERSION
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { cloudinaryUpload } from "./cloudinary.config";
+import multer from "multer";
+import { Request } from "express";
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinaryUpload,
   params: async (req: Request, file: Express.Multer.File) => {
-    const fileExtension = file.originalname.split('.').pop() || '';
+    const fileExtension = file.originalname.split(".").pop() || "";
 
     const baseFileName = file.originalname
-      .replace(`.${fileExtension}`, '')
+      .replace(`.${fileExtension}`, "")
       .toLowerCase()
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9\-]/g, "");
 
     const uniqueId = `${Math.random().toString(36).substring(2)}-${Date.now()}-${baseFileName}`;
 
-    let resourceType: 'image' | 'video' | 'raw' = 'image';
+    let resourceType: "image" | "video" | "raw" | "auto" = "image";
+    let folder = "assets";
 
-    if (file.mimetype === 'application/zip' || file.mimetype === 'application/pdf') {
-      resourceType = 'raw';
-    } 
-    else if (file.mimetype.startsWith('video/')) {
-      resourceType = 'video';
-    } 
-    else if (file.mimetype.startsWith('audio/')) {
-      resourceType = 'video';   // ✅ FIXED: audio must be uploaded as video
+    // ✅ SCORM/ZIP files must be 'raw' and keep original extension
+    if (
+      file.mimetype === "application/zip" ||
+      file.mimetype === "application/x-zip-compressed" ||
+      fileExtension.toLowerCase() === "zip"
+    ) {
+      resourceType = "raw";
+      folder = "assets/scorm"; // Separate folder for SCORM
+      // ⚠️ IMPORTANT: Don't specify format for ZIP files
+      return {
+        folder: folder,
+        public_id: uniqueId,
+        resource_type: resourceType,
+        format: "zip",
+      };
+    }
+    // PDF files
+    else if (file.mimetype === "application/pdf") {
+      resourceType = "raw";
+      folder = "assets/pdf";
+      return {
+        folder: folder,
+        public_id: uniqueId,
+        resource_type: resourceType,
+        format: "pdf",
+      };
+    }
+    // Video files
+    else if (file.mimetype.startsWith("video/")) {
+      resourceType = "video";
+      folder = "assets/videos";
+    }
+    // Audio files (must use 'video' resource type)
+    else if (file.mimetype.startsWith("audio/")) {
+      resourceType = "video";
+      folder = "assets/audio";
+    }
+    // Image files
+    else if (file.mimetype.startsWith("image/")) {
+      resourceType = "image";
+      folder = "assets/images";
     }
 
     return {
-      folder: 'assets',
+      folder: folder,
       public_id: uniqueId,
       resource_type: resourceType,
       format: fileExtension,
@@ -40,6 +271,37 @@ const storage = new CloudinaryStorage({
 export const multerUpload = multer({
   storage: storage,
   limits: {
-    fileSize: 1024 * 1024 * 1024, // 1GB
+    fileSize: 100 * 1024 * 1024, // ✅ 100MB limit (SCORM files can be large)
+  },
+  fileFilter: (req, file, cb) => {
+    // ✅ Allowed MIME types
+    const allowedMimeTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "video/mp4",
+      "video/mpeg",
+      "video/webm",
+      "video/quicktime",
+      "audio/mpeg",
+      "audio/mp3",
+      "audio/wav",
+      "audio/ogg",
+      "application/pdf",
+      "application/zip",
+      "application/x-zip-compressed",
+      "application/octet-stream", // Some ZIP files use this
+    ];
+
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`File type ${file.mimetype} is not supported`));
+    }
   },
 });
+
+// ============================================
+// cloudinary.config.ts - VERIFY THIS

@@ -7,7 +7,6 @@ import { Course } from "../course/course.model";
 import { ILissonContentType } from "./courseLesson.interface";
 import { Types } from "mongoose";
 
-
 const createLesson = catchAsync(async (req: Request, res: Response) => {
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
@@ -61,7 +60,7 @@ const createLesson = catchAsync(async (req: Request, res: Response) => {
 
   // ✅ Safe find module (find ব্যবহার করো)
   const module = course.modules.find(
-    (m: any) => m._id?.toString() === moduleId
+    (m: any) => m._id?.toString() === moduleId,
   );
 
   if (!module) {
@@ -81,19 +80,21 @@ const createLesson = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
 const updateLessonContent = catchAsync(async (req: Request, res: Response) => {
-  const { lessonName, article, duration, courseId, moduleId, lessonId } = req.body;
-
+  const { lessonName, article, duration, courseId, moduleId, lessonId } =
+    req.body;
 
   if (!courseId || !moduleId || !lessonId) {
     throw new AppError(400, "courseId, moduleId and lessonId are required");
   }
 
-  if (!Types.ObjectId.isValid(courseId) || !Types.ObjectId.isValid(moduleId) || !Types.ObjectId.isValid(lessonId)) {
+  if (
+    !Types.ObjectId.isValid(courseId) ||
+    !Types.ObjectId.isValid(moduleId) ||
+    !Types.ObjectId.isValid(lessonId)
+  ) {
     throw new AppError(400, "Invalid courseId, moduleId or lessonId");
   }
-
 
   const course = await Course.findById(courseId);
   if (!course) {
@@ -101,14 +102,14 @@ const updateLessonContent = catchAsync(async (req: Request, res: Response) => {
   }
 
   const module = course.modules.find(
-    (m) => m._id && m._id.toString() === moduleId
+    (m) => m._id && m._id.toString() === moduleId,
   );
   if (!module) {
     throw new AppError(404, "Module not found");
   }
 
   const lesson = module.lessons.find(
-    (l) => l._id && l._id.toString() === lessonId
+    (l) => l._id && l._id.toString() === lessonId,
   );
   if (!lesson) {
     throw new AppError(404, "Lesson not found");
@@ -133,21 +134,20 @@ const updateLessonContent = catchAsync(async (req: Request, res: Response) => {
     message: "Lesson updated successfully",
     data: lesson,
   });
-}
-);
-
+});
 
 const deleteLesson = catchAsync(async (req: Request, res: Response) => {
   const { courseId, moduleId, lessonId } = req.body;
 
   if (!courseId || !moduleId || !lessonId) {
-    throw new AppError(
-      400,
-      "courseId, moduleId and lessonId are required"
-    );
+    throw new AppError(400, "courseId, moduleId and lessonId are required");
   }
 
-  if (!Types.ObjectId.isValid(courseId) || !Types.ObjectId.isValid(moduleId) || !Types.ObjectId.isValid(lessonId)) {
+  if (
+    !Types.ObjectId.isValid(courseId) ||
+    !Types.ObjectId.isValid(moduleId) ||
+    !Types.ObjectId.isValid(lessonId)
+  ) {
     throw new AppError(400, "Invalid courseId, moduleId or lessonId");
   }
 
@@ -157,14 +157,14 @@ const deleteLesson = catchAsync(async (req: Request, res: Response) => {
   }
 
   const module = course.modules.find(
-    (m) => m._id && m._id.toString() === moduleId
+    (m) => m._id && m._id.toString() === moduleId,
   );
   if (!module) {
     throw new AppError(404, "Module not found");
   }
 
   const lessonIndex = module.lessons.findIndex(
-    (l) => l._id && l._id.toString() === lessonId
+    (l) => l._id && l._id.toString() === lessonId,
   );
 
   if (lessonIndex === -1) {
@@ -179,10 +179,7 @@ const deleteLesson = catchAsync(async (req: Request, res: Response) => {
     success: true,
     message: "Lesson deleted successfully",
   });
-}
-);
-
-
+});
 
 const updateLessonContentVideo = async (req: Request, res: Response) => {
   try {
@@ -226,12 +223,9 @@ const updateLessonContentVideo = async (req: Request, res: Response) => {
         },
       },
       {
-        arrayFilters: [
-          { "m._id": moduleId },
-          { "l._id": lessonId },
-        ],
+        arrayFilters: [{ "m._id": moduleId }, { "l._id": lessonId }],
         new: true,
-      }
+      },
     );
 
     if (!updatedCourse) {
@@ -258,5 +252,5 @@ export const LessionController = {
   createLesson,
   updateLessonContent,
   deleteLesson,
-  updateLessonContentVideo
-}
+  updateLessonContentVideo,
+};

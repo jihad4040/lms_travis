@@ -3,3 +3,5 @@ temp_auto_push.bat
 dist.gitignore
 config.bat
 temp_interactive_push.bat
+.env
+.DS_Store
