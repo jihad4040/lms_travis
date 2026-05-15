@@ -6,6 +6,7 @@ import { ILesson } from "../course/course.interface";
 import { Course } from "../course/course.model";
 import { ILissonContentType } from "./courseLesson.interface";
 import { Types } from "mongoose";
+import { processScormZip } from "../../utils/scormUnzip";
 
 const createLesson = catchAsync(async (req: Request, res: Response) => {
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
@@ -45,9 +46,18 @@ const createLesson = catchAsync(async (req: Request, res: Response) => {
     throw new AppError(400, "No valid content file uploaded.");
   }
 
+  let unzeepFile: any = [];
+  const file = files?.[detectedType!]?.[0];
+  const isZip = file?.originalname.toLowerCase().endsWith(".zip") || detectedType === "scorm";
+
+  if (isZip) {
+    unzeepFile = await processScormZip(contentUrl);
+  }
+
   const newLesson: ILesson = {
     lessonName,
     contentUrl,
+    unzeepFile,
     article,
     duration,
     isCompleted: false,
@@ -211,17 +221,29 @@ const updateLessonContentVideo = async (req: Request, res: Response) => {
     // ✅ multer-storage-cloudinary auto upload করেছে
     const contentUrl = (file as any).path; // 👈 Cloudinary URL
 
+    let unzeepFile: any[] = [];
+    const fileExtension = file.originalname.split(".").pop()?.toLowerCase();
+    if (fileExtension === "zip") {
+      unzeepFile = await processScormZip(contentUrl);
+    }
+
+    const updateQuery: any = {
+      $set: {
+        "modules.$[m].lessons.$[l].contentUrl": contentUrl,
+      },
+    };
+
+    if (unzeepFile.length > 0) {
+      updateQuery.$set["modules.$[m].lessons.$[l].unzeepFile"] = unzeepFile;
+    }
+
     const updatedCourse = await Course.findOneAndUpdate(
       {
         _id: courseId,
         "modules._id": moduleId,
         "modules.lessons._id": lessonId,
       },
-      {
-        $set: {
-          "modules.$[m].lessons.$[l].contentUrl": contentUrl,
-        },
-      },
+      updateQuery,
       {
         arrayFilters: [{ "m._id": moduleId }, { "l._id": lessonId }],
         new: true,

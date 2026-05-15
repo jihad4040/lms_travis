@@ -1,11 +1,10 @@
 import mongoose, { Schema } from "mongoose";
 import { ICourse, ICourseStatus, ILesson, IModule } from "./course.interface";
 
-
-
 const LessonSchema: Schema<ILesson> = new Schema(
   {
     lessonName: { type: String, required: true, trim: true },
+    unzeepFile: [],
     contentUrl: { type: String, trim: true },
     article: { type: String, trim: true },
     duration: { type: Number, default: 0 },
@@ -13,7 +12,6 @@ const LessonSchema: Schema<ILesson> = new Schema(
   },
   { _id: true }
 );
-
 
 const ModuleSchema: Schema<IModule> = new Schema(
   {
@@ -28,7 +26,7 @@ const CourseSchema: Schema<ICourse> = new Schema(
   {
     title: { type: String, required: true, trim: true },
     description: { type: String, required: true },
-    thumbnail: { type: String},
+    thumbnail: { type: String },
     category: { type: String, required: true },
     prices: { type: Number, required: true },
     courseTag: { type: String, required: true },
@@ -43,7 +41,7 @@ const CourseSchema: Schema<ICourse> = new Schema(
     instructorName: { type: String, required: true },
     instructorTitle: { type: String, required: true },
     instructorDescription: { type: String, required: true },
-    instructorProfile: { type: String},
+    instructorProfile: { type: String },
     modules: [ModuleSchema],
   },
   { timestamps: true }

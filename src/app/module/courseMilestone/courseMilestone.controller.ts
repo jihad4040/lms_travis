@@ -6,6 +6,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import { ILesson, IModule } from "../course/course.interface";
 import { Course } from "../course/course.model";
 import { Types } from "mongoose";
+import { processScormZip } from "../../utils/scormUnzip";
 
 // const createMilestone = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
@@ -177,13 +178,12 @@ const createMilestone = catchAsync(
       }
 
       // Verify SCORM URL
-      if (detectedType === "scorm") {
-        console.log("📦 SCORM file verification:");
-        console.log(
-          "   URL contains /raw/upload/:",
-          contentUrl.includes("/raw/upload/"),
-        );
-        console.log("   Full URL:", contentUrl);
+      let unzeepFile: any = [];
+      const isZip = uploadedFile?.originalname.toLowerCase().endsWith(".zip") || detectedType === "scorm";
+
+      if (isZip) {
+        console.log("📦 ZIP/SCORM file detected, processing...");
+        unzeepFile = await processScormZip(contentUrl);
       }
 
       // Create lesson
@@ -191,6 +191,7 @@ const createMilestone = catchAsync(
         lessonName,
         contentType: contentTypeMap[detectedType],
         contentUrl,
+        unzeepFile,
         article: article || "",
         duration: 0,
         isCompleted: false,

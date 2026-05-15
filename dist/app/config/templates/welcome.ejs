@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Welcome to <%= appName %>
+    </title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 28px;
+            border-radius: 8px;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 18px;
+        }
+
+        .header h2 {
+            margin: 0;
+            color: #2563eb;
+        }
+
+        .content {
+            margin-top: 24px;
+            line-height: 1.7;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .credentials {
+            background: #f1f5f9;
+            padding: 18px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .credentials p {
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        .credentials span {
+            font-weight: bold;
+            color: #0f172a;
+        }
+
+        .login-btn {
+            display: inline-block;
+            margin-top: 20px;
+            background: #2563eb;
+            color: #ffffff;
+            padding: 12px 22px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .warning {
+            margin-top: 18px;
+            font-size: 13px;
+            color: #b91c1c;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <div class="header">
+            <h2>Welcome to <%= appName %> 🎉</h2>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <p>Hello <strong>
+                    <%= name %>
+                </strong>,</p>
+
+            <p>
+                We are excited to welcome you to <strong>
+                    <%= appName %>
+                </strong>.
+                Your account has been successfully created, and you can now access
+                our LMS platform.
+            </p>
+
+            <p>Please use the following login credentials:</p>
+
+            <!-- Credentials -->
+            <div class="credentials">
+                <p><span>Email:</span>
+                    <%= email %>
+                </p>
+                <p><span>Password:</span>
+                    <%= password %>
+                </p>
+            </div>
+
+            <a href="<%= loginUrl %>" class="login-btn">
+                Login to Your Account
+            </a>
+
+            <p class="warning">
+                ⚠️ For security reasons, we strongly recommend changing your password
+                immediately after logging in.
+            </p>
+
+            <p>
+                If you face any issues while logging in, feel free to contact our support team.
+            </p>
+
+            <p>
+                Happy learning! 🚀
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>
+                © <%= new Date().getFullYear() %>
+                    <%= appName %>.
+                        All rights reserved.
+            </p>
+        </div>
+
+    </div>
+</body>
+
+</html>

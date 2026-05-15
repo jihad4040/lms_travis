@@ -34,6 +34,7 @@ export interface ILesson {
   _id?: Types.ObjectId;
   lessonName: string;
   contentType?: string;
+    unzeepFile ?: any[];
   contentUrl?: string;
   article?: string;
   duration?: number;
@@ -80,4 +81,5 @@ export interface IUpCourse {
   instructorTitle?: string;
   instructorDescription?: string;
   instructorProfile?: string;
-}
+  modules?: IModule[];
+}

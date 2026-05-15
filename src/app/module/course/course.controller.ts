@@ -9,6 +9,7 @@ import { UserCourseProgress } from "../userCourseProgress/UserCourseProgress.mod
 import { IUpCourse } from "./course.interface";
 import { Types } from "mongoose";
 import { RecentActivity } from "../RecentActivity/recent.activity.model";
+import { processScormZip } from "../../utils/scormUnzip";
 
 
 const createCourse = catchAsync(async (req, res, next: NextFunction) => {
@@ -298,8 +299,33 @@ const updateCourseInformation = catchAsync(async (req: Request, res: Response, n
             return;
         }
 
+        if (key === "modules" && Array.isArray(value)) {
+            // Processing ZIP files if they are in the modules payload
+            (payload as any)[key] = value;
+            return;
+        }
+
         (payload as any)[key] = value;
     });
+
+    // After populating payload, if modules are present, process them for ZIPs
+    if (payload.modules && Array.isArray(payload.modules)) {
+        for (const module of payload.modules) {
+            if (module.lessons && Array.isArray(module.lessons)) {
+                for (const lesson of module.lessons) {
+                    const isZip = lesson.contentUrl?.toLowerCase().endsWith(".zip");
+                    const hasNoUnzip = !lesson.unzeepFile || lesson.unzeepFile.length === 0;
+                    if (isZip && hasNoUnzip) {
+                        try {
+                            lesson.unzeepFile = await processScormZip(lesson.contentUrl);
+                        } catch (err) {
+                            console.error(`Failed to process ZIP for lesson ${lesson.lessonName}:`, err);
+                        }
+                    }
+                }
+            }
+        }
+    }
     // ✅ optional images
     if (req.files) {
         const files = req.files as Record<string, Express.Multer.File[]>;
