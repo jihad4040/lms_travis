@@ -315,7 +315,7 @@ const updateCourseInformation = catchAsync(async (req: Request, res: Response, n
                 for (const lesson of module.lessons) {
                     const isZip = lesson.contentUrl?.toLowerCase().endsWith(".zip");
                     const hasNoUnzip = !lesson.unzeepFile || lesson.unzeepFile.length === 0;
-                    if (isZip && hasNoUnzip) {
+                    if (lesson.contentUrl && isZip && hasNoUnzip) {
                         try {
                             lesson.unzeepFile = await processScormZip(lesson.contentUrl);
                         } catch (err) {

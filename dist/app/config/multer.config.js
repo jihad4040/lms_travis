@@ -25,23 +25,22 @@ const storage = new multer_storage_cloudinary_1.CloudinaryStorage({
             fileExtension.toLowerCase() === "zip") {
             resourceType = "raw";
             folder = "assets/scorm"; // Separate folder for SCORM
-            // ⚠️ IMPORTANT: Don't specify format for ZIP files
+            // ⚠️ IMPORTANT: Don't specify format for ZIP files, append extension to public_id
             return {
                 folder: folder,
-                public_id: uniqueId,
+                public_id: `${uniqueId}.${fileExtension}`,
                 resource_type: resourceType,
-                format: "zip",
             };
         }
         // PDF files
         else if (file.mimetype === "application/pdf") {
             resourceType = "raw";
             folder = "assets/pdf";
+            // ⚠️ IMPORTANT: Don't specify format for PDF raw resources, append extension to public_id
             return {
                 folder: folder,
-                public_id: uniqueId,
+                public_id: `${uniqueId}.${fileExtension}`,
                 resource_type: resourceType,
-                format: "pdf",
             };
         }
         // Video files

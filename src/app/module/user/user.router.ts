@@ -22,6 +22,14 @@ interface AuthenticatedUser {
 
 UserRouter.get(
   "/microsoft/callback",
+  (req, res, next) => {
+    console.log(`\n=== [OAuth Diagnostic] Microsoft Callback Hit ===`);
+    console.log(`Time: ${new Date().toISOString()}`);
+    console.log(`IP: ${req.ip || req.socket.remoteAddress}`);
+    console.log(`Code Parameter Present: ${!!req.query.code}`);
+    console.log(`================================================\n`);
+    next();
+  },
   passport.authenticate("microsoft", { session: false }),
   (req: Request, res: Response) => {
     const user = req.user as AuthenticatedUser | undefined;
@@ -45,7 +53,13 @@ UserRouter.get(
     //   token
     // });
     // Redirect back to your React frontend with the token
-    res.redirect(`${process.env.FRONTEND_URL}/oauth-success?token=${token}`);
+    let frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    const host = req.headers.host || "";
+    if ((host.includes("localhost") || host.includes("127.0.0.1")) && frontendUrl.includes("learning.awcompaniesinc.com")) {
+      frontendUrl = "http://localhost:5173";
+    }
+
+    res.redirect(`${frontendUrl}/oauth-success?token=${token}`);
   }
 );
 

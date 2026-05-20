@@ -10,11 +10,20 @@ passport.use(
       clientSecret: envVers.MICROSOFT.CLIENT_SECRATE,
       callbackURL: envVers.MICROSOFT.MICROSOFT_REDIRECT_URL,
       scope: ["user.read"],
-      tenant: "common",
+      tenant: envVers.MICROSOFT.TENANT,
     },
     async (accessToken: any, refreshToken: any, profile: any, done: any) => {
       try {
-        const email = profile.emails?.[0]?.value;
+        const email =
+          profile.emails?.[0]?.value ||
+          profile.mail ||
+          profile.userPrincipalName ||
+          profile._json?.mail ||
+          profile._json?.userPrincipalName;
+
+        if (!email) {
+          return done(new Error("Unable to retrieve email address from your Microsoft profile. Please make sure an email is associated with your account."), null);
+        }
 
         let user = await User.findOne({ email });
 

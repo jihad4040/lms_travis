@@ -13,7 +13,14 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const env_1 = require("../../config/env");
 const UserRouter = (0, express_1.Router)();
 UserRouter.get("/microsoft", passport_1.default.authenticate("microsoft"));
-UserRouter.get("/microsoft/callback", passport_1.default.authenticate("microsoft", { session: false }), (req, res) => {
+UserRouter.get("/microsoft/callback", (req, res, next) => {
+    console.log(`\n=== [OAuth Diagnostic] Microsoft Callback Hit ===`);
+    console.log(`Time: ${new Date().toISOString()}`);
+    console.log(`IP: ${req.ip || req.socket.remoteAddress}`);
+    console.log(`Code Parameter Present: ${!!req.query.code}`);
+    console.log(`================================================\n`);
+    next();
+}, passport_1.default.authenticate("microsoft", { session: false }), (req, res) => {
     const user = req.user;
     if (!user) {
         return res.status(401).send({
@@ -28,7 +35,12 @@ UserRouter.get("/microsoft/callback", passport_1.default.authenticate("microsoft
     //   token
     // });
     // Redirect back to your React frontend with the token
-    res.redirect(`${process.env.FRONTEND_URL}/oauth-success?token=${token}`);
+    let frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    const host = req.headers.host || "";
+    if ((host.includes("localhost") || host.includes("127.0.0.1")) && frontendUrl.includes("learning.awcompaniesinc.com")) {
+        frontendUrl = "http://localhost:5173";
+    }
+    res.redirect(`${frontendUrl}/oauth-success?token=${token}`);
 });
 UserRouter.post("/signIn", user_controller_1.UserController.SingIn);
 UserRouter.post("/signUp", user_controller_1.UserController.SignUp);

@@ -31,7 +31,10 @@ exports.app.use(express_1.default.urlencoded({ limit: "100mb", extended: true })
 exports.app.use(pasport_config_1.default.initialize());
 exports.app.use((0, cookie_parser_1.default)());
 // Module Route
-route_1.moduleRoute.forEach((item) => exports.app.use(`/v1${item.path}`, item.routes));
+route_1.moduleRoute.forEach((item) => {
+    exports.app.use(`/v1${item.path}`, item.routes);
+    exports.app.use(`/api/v1${item.path}`, item.routes);
+});
 exports.app.get("/", (req, res) => {
     res.status(200).json({
         success: true,

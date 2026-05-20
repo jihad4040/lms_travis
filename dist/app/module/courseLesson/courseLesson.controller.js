@@ -42,7 +42,9 @@ const createLesson = (0, catchAsync_1.default)(async (req, res) => {
         throw new AppError_1.default(400, "No valid content file uploaded.");
     }
     let unzeepFile = [];
-    if (detectedType === "scorm") {
+    const file = files?.[detectedType]?.[0];
+    const isZip = file?.originalname.toLowerCase().endsWith(".zip") || detectedType === "scorm";
+    if (isZip) {
         unzeepFile = await (0, scormUnzip_1.processScormZip)(contentUrl);
     }
     const newLesson = {

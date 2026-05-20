@@ -14,29 +14,60 @@ const processScormZip = async (zipUrl) => {
         const zip = new adm_zip_1.default(Buffer.from(response.data));
         const zipEntries = zip.getEntries();
         const uploadPromises = zipEntries
-            .filter((entry) => !entry.isDirectory)
+            .filter((entry) => {
+            if (entry.isDirectory)
+                return false;
+            const entryName = entry.entryName;
+            // Ignore OS-specific/hidden metadata and system files
+            if (entryName.includes("__MACOSX") ||
+                entryName.includes(".DS_Store") ||
+                entryName.endsWith("Thumbs.db") ||
+                entryName.endsWith("desktop.ini") ||
+                entryName.split(/[/\\]/).some((part) => part.startsWith("."))) {
+                return false;
+            }
+            return true;
+        })
             .map(async (entry) => {
             const buffer = entry.getData();
-            const fileName = entry.entryName.split("/").pop() || entry.entryName;
+            // Support both POSIX (/) and Windows (\) path separators
+            const parts = entry.entryName.split(/[/\\]/);
+            const fileName = parts.pop() || entry.entryName;
             const fileExtension = fileName.split(".").pop()?.toLowerCase() || "";
             let type = "other";
-            if (["mp4", "webm", "ogg"].includes(fileExtension))
+            let resourceType = "raw";
+            if (["mp4", "webm", "ogg", "mov", "flv", "avi"].includes(fileExtension)) {
                 type = "video";
-            else if (["mp3", "wav", "mpeg"].includes(fileExtension))
+                resourceType = "video";
+            }
+            else if (["mp3", "wav", "mpeg", "m4a", "aac", "wma"].includes(fileExtension)) {
                 type = "audio";
-            else if (["jpg", "jpeg", "png", "gif", "webp"].includes(fileExtension))
+                resourceType = "video"; // Cloudinary uses "video" for audio uploads
+            }
+            else if (["jpg", "jpeg", "png", "gif", "webp", "svg", "ico"].includes(fileExtension)) {
                 type = "image";
-            else if (fileExtension === "pdf")
+                resourceType = "image";
+            }
+            else if (fileExtension === "pdf") {
                 type = "pdf";
-            else if (["html", "htm"].includes(fileExtension))
+                resourceType = "raw";
+            }
+            else if (["html", "htm"].includes(fileExtension)) {
                 type = "html";
-            else if (["txt", "md"].includes(fileExtension))
+                resourceType = "raw";
+            }
+            else if (["txt", "md"].includes(fileExtension)) {
                 type = "text";
-            // 2. Upload to Cloudinary
-            const uploadToCloudinary = (fileBuffer, name) => {
+                resourceType = "raw";
+            }
+            else {
+                resourceType = "raw";
+            }
+            // 2. Upload to Cloudinary with the correct, explicit resource_type
+            const uploadToCloudinary = (fileBuffer, name, resType) => {
                 return new Promise((resolve, reject) => {
                     const uploadStream = cloudinary_config_1.cloudinaryUpload.uploader.upload_stream({
-                        resource_type: "auto",
+                        resource_type: resType,
                         folder: "assets/scorm_unzipped",
                         public_id: `${Date.now()}-${name.replace(/[^a-z0-9.]/gi, "_")}`,
                     }, (error, result) => {
@@ -48,7 +79,7 @@ const processScormZip = async (zipUrl) => {
                     uploadStream.end(fileBuffer);
                 });
             };
-            const result = await uploadToCloudinary(buffer, fileName);
+            const result = await uploadToCloudinary(buffer, fileName, resourceType);
             return {
                 type,
                 contentUrl: result.secure_url,

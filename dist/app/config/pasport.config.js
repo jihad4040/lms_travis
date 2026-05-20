@@ -12,10 +12,17 @@ passport_1.default.use(new passport_microsoft_1.Strategy({
     clientSecret: env_1.envVers.MICROSOFT.CLIENT_SECRATE,
     callbackURL: env_1.envVers.MICROSOFT.MICROSOFT_REDIRECT_URL,
     scope: ["user.read"],
-    tenant: "common",
+    tenant: env_1.envVers.MICROSOFT.TENANT,
 }, async (accessToken, refreshToken, profile, done) => {
     try {
-        const email = profile.emails?.[0]?.value;
+        const email = profile.emails?.[0]?.value ||
+            profile.mail ||
+            profile.userPrincipalName ||
+            profile._json?.mail ||
+            profile._json?.userPrincipalName;
+        if (!email) {
+            return done(new Error("Unable to retrieve email address from your Microsoft profile. Please make sure an email is associated with your account."), null);
+        }
         let user = await user_model_1.User.findOne({ email });
         if (!user) {
             user = await user_model_1.User.create({

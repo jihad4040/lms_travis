@@ -48,5 +48,6 @@ export interface IUpCourse {
     instructorTitle?: string;
     instructorDescription?: string;
     instructorProfile?: string;
+    modules?: IModule[];
 }
 //# sourceMappingURL=course.interface.d.ts.map

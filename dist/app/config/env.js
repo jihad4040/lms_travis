@@ -58,6 +58,7 @@ const envChecker = () => {
             MICROSOFT_REDIRECT_URL: process.env.MICROSOFT_REDIRECT_URL,
             CLIENT_ID: process.env.CLIENT_ID,
             CLIENT_SECRATE: process.env.CLIENT_SECRATE,
+            TENANT: process.env.MICROSOFT_TENANT || "common",
         },
     };
 };

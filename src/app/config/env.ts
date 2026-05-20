@@ -28,6 +28,7 @@ interface IEnv {
     MICROSOFT_REDIRECT_URL: string;
     CLIENT_ID: string;
     CLIENT_SECRATE: string;
+    TENANT: string;
   };
 }
 
@@ -85,6 +86,7 @@ const envChecker = (): IEnv => {
       MICROSOFT_REDIRECT_URL: process.env.MICROSOFT_REDIRECT_URL as string,
       CLIENT_ID: process.env.CLIENT_ID as string,
       CLIENT_SECRATE: process.env.CLIENT_SECRATE as string,
+      TENANT: (process.env.MICROSOFT_TENANT as string) || "common",
     },
   };
 };

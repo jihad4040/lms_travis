@@ -24,6 +24,7 @@ interface IEnv {
         MICROSOFT_REDIRECT_URL: string;
         CLIENT_ID: string;
         CLIENT_SECRATE: string;
+        TENANT: string;
     };
 }
 export declare const envVers: IEnv;

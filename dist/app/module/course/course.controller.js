@@ -13,6 +13,7 @@ const QueryBuilder_1 = require("../../utils/QueryBuilder");
 const UserCourseProgress_model_1 = require("../userCourseProgress/UserCourseProgress.model");
 const mongoose_1 = require("mongoose");
 const recent_activity_model_1 = require("../RecentActivity/recent.activity.model");
+const scormUnzip_1 = require("../../utils/scormUnzip");
 const createCourse = (0, catchAsync_1.default)(async (req, res, next) => {
     const bodyData = req.body.data ? JSON.parse(req.body.data) : {};
     const files = req.files;
@@ -222,8 +223,32 @@ const updateCourseInformation = (0, catchAsync_1.default)(async (req, res, next)
             }
             return;
         }
+        if (key === "modules" && Array.isArray(value)) {
+            // Processing ZIP files if they are in the modules payload
+            payload[key] = value;
+            return;
+        }
         payload[key] = value;
     });
+    // After populating payload, if modules are present, process them for ZIPs
+    if (payload.modules && Array.isArray(payload.modules)) {
+        for (const module of payload.modules) {
+            if (module.lessons && Array.isArray(module.lessons)) {
+                for (const lesson of module.lessons) {
+                    const isZip = lesson.contentUrl?.toLowerCase().endsWith(".zip");
+                    const hasNoUnzip = !lesson.unzeepFile || lesson.unzeepFile.length === 0;
+                    if (lesson.contentUrl && isZip && hasNoUnzip) {
+                        try {
+                            lesson.unzeepFile = await (0, scormUnzip_1.processScormZip)(lesson.contentUrl);
+                        }
+                        catch (err) {
+                            console.error(`Failed to process ZIP for lesson ${lesson.lessonName}:`, err);
+                        }
+                    }
+                }
+            }
+        }
+    }
     // ✅ optional images
     if (req.files) {
         const files = req.files;

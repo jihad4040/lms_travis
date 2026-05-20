@@ -47,24 +47,57 @@ process.on("SIGINT", () => {
   process.exit(0);
 });
 
-process.on("uncaughtException", () => {
-  console.log("UncaughtException detected... Server shuting doen.");
+process.on("uncaughtException", (error: any) => {
+  console.error("Uncaught Exception:", error);
 
+  // Check if this is a Cloudinary upload error (e.g. file size too large or upload failures)
+  const isCloudinaryError =
+    error &&
+    (error.http_code === 400 ||
+      error.http_code === 404 ||
+      (error.message && error.message.includes("cloudinary")) ||
+      (error.message && error.message.includes("File size too large"))
+    );
+
+  if (isCloudinaryError) {
+    console.warn("⚠️ Safe to ignore: Uncaught exception from Cloudinary upload. Keeping server alive.");
+    return;
+  }
+
+  console.log("UncaughtException detected... Server shutting down.");
   if (server) {
     server.close(() => {
       process.exit(0);
     });
+  } else {
+    process.exit(0);
   }
-  process.exit(0);
 });
 
-process.on("unhandledRejection", () => {
-  console.log("UnhandledRejection detected... Server shuting doen.");
+process.on("unhandledRejection", (reason: any, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
 
+  // Check if this is a Cloudinary upload error (e.g. file size too large or upload failures)
+  const isCloudinaryError =
+    reason &&
+    (reason.http_code === 400 ||
+      reason.http_code === 404 ||
+      (reason.message && reason.message.includes("cloudinary")) ||
+      (reason.message && reason.message.includes("File size too large"))
+    );
+
+  if (isCloudinaryError) {
+    console.warn("⚠️ Safe to ignore: Unhandled rejection from Cloudinary upload. Keeping server alive.");
+    return;
+  }
+
+  console.log("UnhandledRejection detected... Server shutting down.");
   if (server) {
     server.close(() => {
       process.exit(0);
     });
+  } else {
+    process.exit(0);
   }
-  process.exit(0);
 });
+

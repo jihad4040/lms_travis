@@ -10,6 +10,7 @@ const AppError_1 = __importDefault(require("../../utils/AppError"));
 const sendResponse_1 = require("../../utils/sendResponse");
 const course_model_1 = require("../course/course.model");
 const mongoose_1 = require("mongoose");
+const scormUnzip_1 = require("../../utils/scormUnzip");
 // const createMilestone = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 //     // TypeScript fix: force type cast as object with File[] values
 //     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
@@ -142,16 +143,18 @@ const createMilestone = (0, catchAsync_1.default)(async (req, res, next) => {
             throw new AppError_1.default(400, "No valid content file uploaded.");
         }
         // Verify SCORM URL
-        if (detectedType === "scorm") {
-            console.log("📦 SCORM file verification:");
-            console.log("   URL contains /raw/upload/:", contentUrl.includes("/raw/upload/"));
-            console.log("   Full URL:", contentUrl);
+        let unzeepFile = [];
+        const isZip = uploadedFile?.originalname.toLowerCase().endsWith(".zip") || detectedType === "scorm";
+        if (isZip) {
+            console.log("📦 ZIP/SCORM file detected, processing...");
+            unzeepFile = await (0, scormUnzip_1.processScormZip)(contentUrl);
         }
         // Create lesson
         const newLesson = {
             lessonName,
             contentType: contentTypeMap[detectedType],
             contentUrl,
+            unzeepFile,
             article: article || "",
             duration: 0,
             isCompleted: false,
